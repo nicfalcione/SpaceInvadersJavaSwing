@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project PSP3 Space Invaders">
+	<property name="dir.buildfile" value="." />
+	<property name="dir.workspace" value="${dir.buildfile}/Comp Sci 150 Lambert" />
+	<property name="dir.jarfile" value="${dir.buildfile}" />
+	<target name="create_run_jar">
+		<jar destfile="${dir.jarfile}/Space Invaders.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="SI" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${dir.jarfile}/PSP4/PSP3 Space Invaders/bin" />
+			<zipfileset excludes="META-INF/*.SF" src="C:/Users/LilBro/.p2/pool/plugins/org.junit_4.12.0.v201504281640/junit.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="C:/Users/LilBro/.p2/pool/plugins/org.hamcrest.core_1.3.0.v201303031735.jar" />
+		</jar>
+	</target>
+</project>
