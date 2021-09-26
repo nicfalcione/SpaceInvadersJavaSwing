@@ -1,3 +1,5 @@
+package com.falcione.nic.spaceinvaders;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -8,11 +10,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -20,28 +23,41 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import com.falcione.nic.spaceinvaders.data.Direction;
+import com.falcione.nic.spaceinvaders.data.Level;
+import com.falcione.nic.spaceinvaders.model.SIBase;
+import com.falcione.nic.spaceinvaders.model.SIBomb;
+import com.falcione.nic.spaceinvaders.model.SIInvader;
+import com.falcione.nic.spaceinvaders.model.SIMystery;
+import com.falcione.nic.spaceinvaders.services.InvaderService;
+import com.falcione.nic.spaceinvaders.util.Constants;
+
 /**
  * Space Invaders panel class
  * 
  * @author Nic Falcione
- * @version 11/23/17
+ * @version 2021
  */
 @SuppressWarnings("serial")
 public class SIpanel extends JPanel {
+
     private static final int TIMER_SPEED = 10;
+
+    private static InvaderService invaderService = InvaderService.getInstance();
+
+    private Level currentLevel;
 
     private File highscore;
     private boolean won, lost;
     private int alienCount;
     private int score;
-    private SIbase base;
-    private SImystery mystery;
-    private boolean halfPulse;
-    private ArrayList<ArrayList<SIinvader>> invaders = new ArrayList<ArrayList<SIinvader>>();
+    private SIBase base;
+    private SIMystery mystery;
+    private ArrayList<ArrayList<SIInvader>> invaders;
     private Timer timer;
     private int pulseCount = 0;
-    private int pulseSpeedInvaders = 40;
-    private ArrayList<SIbomb> bombs;
+    private int pulseSpeedInvaders;
+    private List<SIBomb> bombs;
 
     private boolean speedUpInvaders;
 
@@ -49,13 +65,15 @@ public class SIpanel extends JPanel {
      * Constructor to create the panel for the game
      */
     public SIpanel() {
-        base = new SIbase();
-        makeInvaders();
+        base = new SIBase();
+
+        invaders = invaderService.makeInvaders();
 
         won = lost = false;
+        currentLevel = Level.ONE;
+        pulseSpeedInvaders = currentLevel.getInitPulseSpeedFactor();
         score = 0;
         alienCount = 50;
-        halfPulse = true;
         speedUpInvaders = false;
 
         bombs = new ArrayList<>();
@@ -67,31 +85,35 @@ public class SIpanel extends JPanel {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                case KeyEvent.VK_LEFT:
-                    base.move(true, SIbase.Direction.LEFT);
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    base.move(true, SIbase.Direction.RIGHT);
-                    break;
-                case KeyEvent.VK_SPACE:
-                    base.shoot();
-                case KeyEvent.VK_P:
-                    stopTimer();
-                case KeyEvent.VK_R:
-                    startTimer();
+                if (!lost) {
+                    switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        base.setDirection(true, Direction.LEFT);
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        base.setDirection(true, Direction.RIGHT);
+                        break;
+                    case KeyEvent.VK_SPACE:
+                        base.shoot();
+                    case KeyEvent.VK_P:
+                        stopTimer();
+                    case KeyEvent.VK_R:
+                        startTimer();
+                    }
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                case KeyEvent.VK_LEFT:
-                    base.move(false, SIbase.Direction.LEFT);
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    base.move(false, SIbase.Direction.RIGHT);
-                    break;
+                if (!lost) {
+                    switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        base.setDirection(false, Direction.LEFT);
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        base.setDirection(false, Direction.RIGHT);
+                        break;
+                    }
                 }
             }
 
@@ -103,61 +125,68 @@ public class SIpanel extends JPanel {
 
         // Sets timer update
         timer = new Timer(TIMER_SPEED, new ActionListener() {
+            @SuppressWarnings("deprecation")
             @Override
             public void actionPerformed(ActionEvent e) {
                 pulseCount++;
 
                 // Speeds up invaders if bounds are hit
-                if (speedUpInvaders) {
-                    pulseSpeedInvaders *= 0.8;
-                    if (pulseSpeedInvaders <= 5) {
-                        pulseSpeedInvaders = 5;
-                    }
+                if (speedUpInvaders && pulseSpeedInvaders >= currentLevel
+                        .getSpeedFactor()) {
+                    pulseSpeedInvaders *= currentLevel.getPulseSpeedFactor();
                     speedUpInvaders = false;
                 }
 
                 base.move();
 
-                // Moves Invaders Down and changes direction to left
-                if (invaders.get(0).get(invaders.get(0).size() - 1)
-                        .getX() == 450
-                        && invaders.get(0).get(0).getDirec().equals("right")) {
-                    speedUpInvaders = true;
-                    for (int k = 0; k < invaders.size(); k++) {
-                        for (int l = 0; l < invaders.get(0).size(); l++) {
-                            invaders.get(k).get(l).setDirec("left");
-                            invaders.get(k).get(l)
-                                    .setY(invaders.get(k).get(l).getY() + 12);
+                // Find left and right most invaders that are alive
+                int leftMostAliveInvader = invaders.get(0).size() - 1;
+                int rightMostAliveInvader = 0;
+                
+                for (int i = 0; i < invaders.size(); i++) {
+                    for (int j = 0; j < invaders.get(0).size(); j++) {
+                        if (!invaders.get(i).get(j).isDead()) {
+                            leftMostAliveInvader = leftMostAliveInvader > j ? j : leftMostAliveInvader;
+                            rightMostAliveInvader = rightMostAliveInvader < j ? j : rightMostAliveInvader;
                         }
                     }
                 }
 
-                // Moves Invaders Down and changes direction to right
-                if (invaders.get(0).get(0).getX() == 0
+                // Moves Invaders Down and changes direction to right based on farthest left alive invader
+                if (invaders.get(0).get(leftMostAliveInvader).getX() == 0
                         && invaders.get(0).get(0).getDirec().equals("left")) {
                     speedUpInvaders = true;
-                    for (int k = 0; k < invaders.size(); k++) {
-                        for (int l = 0; l < invaders.get(0).size(); l++) {
-                            invaders.get(k).get(l).setDirec("right");
-                            invaders.get(k).get(l)
-                                    .setY(invaders.get(k).get(l).getY() + 12);
+                    invaders.forEach(row -> row.forEach(
+                        invader -> {
+                            invader.setDirec("right");
+                            invader.setY(invader.getY() + 12);
                         }
-                    }
+                    ));
+                }
+                
+                // Moves Invaders Down and changes direction to left based on farthest right alive invader
+                if (invaders.get(0).get(rightMostAliveInvader)
+                        .getX() == 460
+                        && invaders.get(0).get(0).getDirec().equals("right")) {
+                    speedUpInvaders = true;
+                    invaders.forEach(row -> row.forEach(
+                        invader -> {
+                            invader.setDirec("left");
+                            invader.setY(invader.getY() + 12);
+                        }
+                    ));
                 }
 
                 // Moves bombs
-                for (SIbomb s : bombs) {
+                for (SIBomb s : bombs) {
                     s.move();
                 }
 
                 // Moves Invaders
                 if (pulseCount % pulseSpeedInvaders == 0) {
-                    for (int i = 0; i < invaders.size(); i++) {
-                        for (int j = 0; j < invaders.get(0).size(); j++) {
-                            invaders.get(i).get(j).move();
-                        }
-                    }
+                    invaders.forEach(row -> row.forEach(invader -> invader.move()));
                 }
+
                 // Deletes Mystery when out of bounds
                 if (mystery != null
                         && (mystery.getX() < -10 || mystery.getX() > 499)) {
@@ -173,37 +202,34 @@ public class SIpanel extends JPanel {
                     Collections.shuffle(dir);
                     String direc = dir.get(0);
                     if (direc.equals("left")) {
-                        mystery = new SImystery(499, 50, 35, 8);
+                        mystery = new SIMystery(499, 50, 35, 8);
                         mystery.setDirection(direc);
                         mystery.getSound().play();
-                    } else
-                        if (direc.equals("right")) {
-                            mystery = new SImystery(-10, 50, 35, 8);
-                            mystery.setDirection(direc);
-                            mystery.getSound().play();
-                        }
+                    } else if (direc.equals("right")) {
+                        mystery = new SIMystery(-10, 50, 35, 8);
+                        mystery.setDirection(direc);
+                        mystery.getSound().play();
+                    }
                 }
-                halfPulse = !halfPulse;
 
                 // Moves Mystery
-                if (mystery != null && halfPulse) {
+                if (mystery != null && pulseCount % 2 == 0) {
                     mystery.move();
                 }
 
-                // Checks for bottom of invaders
+                // Checks for bottom of invaders. Loops backwards 
                 int max = 0;
-                for (int i = 0; i < invaders.size(); i++) {
-                    for (int j = 0; j < invaders.get(0).size(); j++) {
+                A: for (int i = invaders.size() - 1; i >= 0; i--) {
+                    for (int j = invaders.get(0).size() - 1; j >= 0; j--) {
                         if (!invaders.get(i).get(j).isDead()) {
-                            if (i > max) {
-                                max = i;
-                            }
+                            max = i;
+                            break A; // Breaks out of the nested loop completely
                         }
                     }
                 }
 
                 // Ends Game if invaders hit base
-                if (invaders.get(max).get(0).getY() > 350) {
+                if (invaders.get(max).get(0).getY() > Constants.BASE_Y) {
                     lost = true;
                 }
 
@@ -217,7 +243,20 @@ public class SIpanel extends JPanel {
 
         });
         timer.start();
+    }
+    
+    public void increaseLevel(Graphics g) {
+        won = false;
+        
+        currentLevel = currentLevel.next();
+        alienCount = 50;
+        speedUpInvaders = false;
+        pulseSpeedInvaders = currentLevel.getInitPulseSpeedFactor();
 
+        bombs = new ArrayList<>();
+        
+        invaders = invaderService.makeInvaders();
+        timer.start();
     }
 
     /**
@@ -237,8 +276,7 @@ public class SIpanel extends JPanel {
     /**
      * Method to paint components on panel
      * 
-     * @param g
-     *            graphics object
+     * @param g graphics object
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -249,12 +287,14 @@ public class SIpanel extends JPanel {
         base.draw(g2);
 
         // Creates bombs
-        if (bombs.size() < 4) {
+        if (bombs.size() < currentLevel.getMaxBombs()) {
             for (int i = 0; i < invaders.size(); i++) {
                 for (int j = 0; j < invaders.get(0).size(); j++) {
                     int rand = (int) (Math.random() * 10000);
-                    if (rand > 9992 && !invaders.get(i).get(j).isDead()
-                            && bombs.size() < 4) {
+                    
+                    if (rand > 10000 - currentLevel.getBombRandomFactor()
+                            && !invaders.get(i).get(j).isDead()
+                            && bombs.size() < currentLevel.getMaxBombs()) {
                         invaders.get(i).get(j).shoot();
                         bombs.add(invaders.get(i).get(j).getBomb());
                     }
@@ -267,11 +307,13 @@ public class SIpanel extends JPanel {
             for (int j = 0; j < invaders.get(0).size(); j++) {
                 if (invaders.get(i).get(j).getBomb() != null) {
                     invaders.get(i).get(j).drawBomb(g2);
+                    
                     if (invaders.get(i).get(j).getBomb() != null
                             && invaders.get(i).get(j).getBomb().getY() > 500) {
                         for (int k = 0; k < bombs.size(); k++) {
                             if (bombs.get(k)
                                     .equals(invaders.get(i).get(j).getBomb())) {
+                                invaders.get(i).get(j).deleteBomb();
                                 bombs.remove(k);
                             }
                         }
@@ -302,8 +344,11 @@ public class SIpanel extends JPanel {
                         invaders.get(i).get(j).dying();
                         invaders.get(i).get(j).draw(g2);
                         invaders.get(i).get(j).dead();
+
                         base.deleteMissile();
-                        score += invaders.get(i).get(j).getPoints();
+                        score += invaders.get(i).get(j).getPoints()
+                                * currentLevel.getScoreFactor();
+
                         alienCount--;
                         break;
                     }
@@ -312,7 +357,7 @@ public class SIpanel extends JPanel {
         }
 
         // Checks to see if base is hit
-        for (SIbomb bomb : bombs) {
+        for (SIBomb bomb : bombs) {
             int bombY = bomb.getY();
             int bombX = bomb.getX();
 
@@ -320,7 +365,7 @@ public class SIpanel extends JPanel {
             int baseY = base.getY();
 
             if (bombY < baseY && bombY > baseY - 10 && bombX > baseX
-                    && bombX < baseX + 25) {
+                    && bombX < baseX + 25 && !lost) {
                 lost = true;
                 base.death();
             }
@@ -350,11 +395,11 @@ public class SIpanel extends JPanel {
         // Moves all remaining invaders
         for (int i = 0; i < invaders.size(); i++) {
             for (int j = 0; j < invaders.get(0).size(); j++) {
+
+                // Animates invaders to have differing graphics
                 if (invaders.get(i).get(j).getX() % 10 == 0) {
                     invaders.get(i).get(j).draw(g2);
-                }
-
-                else {
+                } else {
                     invaders.get(i).get(j).draw2(g2);
                 }
             }
@@ -362,6 +407,9 @@ public class SIpanel extends JPanel {
 
         // Displays score
         displayScore(g);
+        
+        // Displays score
+        displayLevel(g);
 
         // Draws mystery if declared
         if (mystery != null) {
@@ -371,7 +419,7 @@ public class SIpanel extends JPanel {
         // Displays winning message
         if (won) {
             displayWon(g);
-            updateHighscore();
+            increaseLevel(g);
         }
 
         // Displays losing Message
@@ -385,78 +433,29 @@ public class SIpanel extends JPanel {
     }
 
     /**
-     * Used to create the 2d list of invaders
-     * 
-     * @return 2d arraylist of invaders
-     */
-    public ArrayList<ArrayList<SIinvader>> makeInvaders() {
-        for (int i = 0; i < 5; i++) {
-            invaders.add(new ArrayList<SIinvader>());
-        }
-
-        int y = 85;
-        int x = 70;
-        for (int i = 0; i < 50; i++) {
-            if (i < 10) {
-                invaders.get(0).add(new SItop(x, y, 30, 15));
-                x += 35;
-                if (i == 9) {
-                    y += 25;
-                    x = 70;
-                }
-            } else
-                if (i < 20) {
-                    invaders.get(1).add(new SImiddle(x, y, 30, 15));
-                    x += 35;
-                    if (i == 19) {
-                        y += 25;
-                        x = 70;
-                    }
-                } else
-                    if (i < 30) {
-                        invaders.get(2).add(new SImiddle(x, y, 30, 15));
-                        x += 35;
-                        if (i == 29) {
-                            y += 25;
-                            x = 70;
-                        }
-                    } else
-                        if (i < 40) {
-                            invaders.get(3).add(new SIbottom(x, y, 30, 15));
-                            x += 35;
-                            if (i == 39) {
-                                y += 25;
-                                x = 70;
-                            }
-                        } else {
-                            invaders.get(4).add(new SIbottom(x, y, 30, 15));
-                            x += 35;
-                        }
-        }
-
-        // Initializes the invaders to start moving right
-        for (int i = 0; i < invaders.size(); i++) {
-            for (int j = 0; j < invaders.get(0).size(); j++) {
-                invaders.get(i).get(j).setDirec("right");
-            }
-        }
-        return invaders;
-    }
-
-    /**
      * Displays the score on the panel
      * 
-     * @param g
-     *            Graphics object
+     * @param g Graphics object
      */
     public void displayScore(Graphics g) {
         g.setColor(Color.GREEN);
         g.setFont(new Font("Comic Sans", Font.BOLD, 16));
         FontMetrics fm = g.getFontMetrics();
-        int width = fm.stringWidth("Score: " + score) + 46;
+        int width = fm.stringWidth("Score: " + score) + 30;
 
-        g.drawString("Score: " + String.format("%04d", score), (500 - width),
+        g.drawString("Score: " + Integer.toString(score), (500 - width),
                 20);
+    }
+    
+    /**
+     * Displays the level on the panel
+     * 
+     * @param g Graphics object
+     */
+    public void displayLevel(Graphics g) {
+        g.setColor(Color.GREEN);
+        g.setFont(new Font("Comic Sans", Font.BOLD, 16));
+        g.drawString("Level: " + Integer.toString(currentLevel.getScoreFactor()), 20, 20);
     }
 
     /**
@@ -465,7 +464,8 @@ public class SIpanel extends JPanel {
     public void displayWon(Graphics g) {
         g.setColor(Color.GREEN);
         g.setFont(new Font("Helvetica", Font.BOLD, 50));
-        g.drawString("You Win!", 115, 200);
+        g.drawString("You beat Level " + Integer.toString(currentLevel
+                .getScoreFactor()), 75, 200);
         timer.stop();
     }
 
@@ -484,9 +484,9 @@ public class SIpanel extends JPanel {
      */
     public void updateHighscore() {
         try {
-            highscore = new File("Untitled 1");
+            highscore = new File(Constants.SAVE_FILE);
             Scanner scan = new Scanner(highscore);
-            PrintWriter print = new PrintWriter(highscore);
+            FileWriter writer = new FileWriter(highscore, true);
             int currentHighScore = 0;
 
             while (scan.hasNextLine()) {
@@ -495,11 +495,12 @@ public class SIpanel extends JPanel {
             }
 
             if (score > currentHighScore) {
-                print.println(score);
+                writer.write(System.lineSeparator() + Integer.toString(score));
             }
             scan.close();
-            print.close();
+            writer.close();
         } catch (IOException e) {
+            System.out.print(e.getStackTrace());
         }
     }
 
@@ -533,7 +534,7 @@ public class SIpanel extends JPanel {
                 stopTimer();
                 int high = 0;
                 try {
-                    highscore = new File("Untitled 1");
+                    highscore = new File(Constants.SAVE_FILE);
                     Scanner scan = new Scanner(highscore);
                     while (scan.hasNextLine()) {
                         high = Math.max(high,
@@ -541,6 +542,7 @@ public class SIpanel extends JPanel {
                     }
                     scan.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
 
                 JFrame f = new JFrame();
@@ -548,5 +550,4 @@ public class SIpanel extends JPanel {
             }
         });
     }
-
 }

@@ -1,3 +1,5 @@
+package com.falcione.nic.spaceinvaders;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -8,11 +10,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import com.falcione.nic.spaceinvaders.util.Constants;
+
 /**
  * Space Invaders Main Class
  * 
  * @author Nic Falcione
- * @version 12/7/17
+ * @version 2021
  */
 @SuppressWarnings("serial")
 public class SI extends JFrame {
@@ -23,22 +27,22 @@ public class SI extends JFrame {
      * Constructor to create a Space Invaders Frame
      */
     public SI() {
-        setTitle("Space Invaders");
+        setTitle(Constants.SPACE_INVADERS);
         setSize(500, 450);
 
         JMenuBar menubar = new JMenuBar();
-        JMenu game = new JMenu("Game");
-        JMenu help = new JMenu("Help");
-        JMenu stats = new JMenu("Stats");
+        JMenu game = new JMenu(Constants.GAME);
+        JMenu help = new JMenu(Constants.HELP);
+        JMenu stats = new JMenu(Constants.STATS);
 
-        JMenuItem newGame = new JMenuItem("New Game");
-        JMenuItem pause = new JMenuItem("Pause");
-        JMenuItem resume = new JMenuItem("Resume");
-        JMenuItem exit = new JMenuItem("Exit");
+        JMenuItem newGame = new JMenuItem(Constants.NEW_GAME);
+        JMenuItem pause = new JMenuItem(Constants.PAUSE);
+        JMenuItem resume = new JMenuItem(Constants.RESUME);
+        JMenuItem exit = new JMenuItem(Constants.EXIT);
 
-        JMenuItem about = new JMenuItem("About...");
+        JMenuItem about = new JMenuItem(Constants.ABOUT);
         
-        JMenuItem topscore = new JMenuItem("High Score");
+        JMenuItem topscore = new JMenuItem(Constants.HIGH_SCORE);
 
         menubar.add(game);
         menubar.add(help);
@@ -62,9 +66,9 @@ public class SI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.stopTimer();
-                Object[] options = { "Yes", "No", "Cancel" };
+                Object[] options = { Constants.YES, Constants.NO, Constants.CANCEL };
                 int action = JOptionPane.showOptionDialog(null,
-                        "Start a new game?", "Select an Option",
+                        Constants.START_A_NEW_GAME, Constants.SELECT_AN_OPTION,
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, null);
                 if (action == JOptionPane.YES_OPTION) {
@@ -105,12 +109,13 @@ public class SI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.stopTimer();
-                Object[] options = { "Yes", "No", "Cancel" };
-                int action = JOptionPane.showOptionDialog(null, "Dare to Quit?",
-                        "Select an Option", JOptionPane.YES_NO_CANCEL_OPTION,
+                Object[] options = { Constants.YES, Constants.NO, Constants.CANCEL };
+                int action = JOptionPane.showOptionDialog(null, Constants.DARE_TO_QUIT,
+                        Constants.SELECT_AN_OPTION, JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, null);
                 if (action == JOptionPane.YES_OPTION) {
                     dispose();
+                    System.exit(0);
                 }
 
                 else {
@@ -128,12 +133,13 @@ public class SI extends JFrame {
             public void windowClosing(WindowEvent e) {
                 setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
                 panel.stopTimer();
-                Object[] options = { "Yes", "No", "Cancel" };
-                int action = JOptionPane.showOptionDialog(null, "Dare to Quit?",
-                        "Select an Option", JOptionPane.YES_NO_CANCEL_OPTION,
+                Object[] options = { Constants.YES, Constants.NO, Constants.CANCEL };
+                int action = JOptionPane.showOptionDialog(null, Constants.DARE_TO_QUIT,
+                        Constants.SELECT_AN_OPTION, JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, null);
                 if (action == JOptionPane.YES_OPTION) {
                     dispose();
+                    System.exit(0);
                 }
 
                 else {
@@ -163,5 +169,4 @@ public class SI extends JFrame {
         JFrame f = new SI();
         f.setVisible(true);
     }
-
 }

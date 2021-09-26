@@ -1,57 +1,46 @@
+package com.falcione.nic.spaceinvaders.model;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
+import com.falcione.nic.spaceinvaders.util.Constants;
+import com.falcione.nic.spaceinvaders.util.Utilities;
 
 /**
- * Class for the Middle Row Invader
+ * Class for the Bottom Row Invader
  * 
  * @author Nic Falcione
- * @version 11/23/17
- *
+ * @version 2021
  */
-public class SImiddle extends SIinvader {
+public class SIBottom extends SIInvader {
 
     private Image image1, image2, hit;
     private boolean dying, dead;
 
     /**
-     * Constructor for the Middle Row Invader
+     * Constructor for the Bottom Row Invader
      * 
      * @param x
-     *            x pos of the invader
+     *            x position of the invader
      * @param y
-     *            y pos of the invader
+     *            y position of the invader
      * @param width
      *            width of the invader
      * @param height
      *            height of the invader
      */
-    protected SImiddle(int x, int y, int width, int height) {
+    public SIBottom(int x, int y, int width, int height) {
         super(x, y, width, height);
-        super.setPoints(20);
-        image1 = getImage("SImiddle0.gif");
-        image2 = getImage("SImiddle1.gif");
-        hit = getImage("SIinvaderBlast.gif");
+        super.setPoints(10);
+        
+        image1 = Utilities.getImage(Constants.S_IBOTTOM0_GIF, getClass());
+        image2 = Utilities.getImage(Constants.S_IBOTTOM1_GIF, getClass());
+        hit = Utilities.getImage(Constants.S_IINVADER_BLAST_GIF, getClass());
+        
         dying = dead = false;
     }
 
     /**
-     * Gets the image for the base
-     * 
-     * @param filename
-     *            Name of the file associated with the image
-     * @return Image associated with the base
-     */
-    private Image getImage(String filename) {
-        URL url = getClass().getResource(filename);
-        ImageIcon icon = new ImageIcon(url);
-        return icon.getImage();
-    }
-
-    /**
-     * Graphics drawing method overriden
+     * Graphics drawing method overridden
      * 
      * @param g2
      *            Graphics object
@@ -60,12 +49,7 @@ public class SImiddle extends SIinvader {
     public void draw(Graphics2D g2) {
         if (dying) {
             g2.drawImage(hit, getX(), getY(), null);
-        }
-
-        else if (dead) {
-        }
-
-        else {
+        } else if (!dead) {
             g2.drawImage(image1, getX(), getY(), null);
         }
     }
@@ -79,12 +63,7 @@ public class SImiddle extends SIinvader {
     public void draw2(Graphics2D g2) {
         if (dying) {
             g2.drawImage(hit, getX(), getY(), null);
-        }
-
-        else if (dead) {
-        }
-
-        else {
+        } else if (!dead) {
             g2.drawImage(image2, getX(), getY(), null);
         }
     }
@@ -124,11 +103,11 @@ public class SImiddle extends SIinvader {
                 deleteBomb();
             }
         }
+        
         if (getDirec().equals("left")) {
             setX(getX() - 5);
         } else if (getDirec().equals("right")) {
             setX(getX() + 5);
         }
     }
-
 }

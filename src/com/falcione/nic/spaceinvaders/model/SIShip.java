@@ -1,10 +1,11 @@
+package com.falcione.nic.spaceinvaders.model;
 /**
  * Abstract class for the Ship
  * 
  * @author Nic Falcione
- * @version 11/23/17
+ * @version 2021
  */
-public abstract class SIship extends SIthing {
+public abstract class SIShip extends Entity {
 
     /**
      * Constructor for the Ship
@@ -18,8 +19,7 @@ public abstract class SIship extends SIthing {
      * @param height
      *            height of the ship
      */
-    protected SIship(int x, int y, int width, int height) {
+    protected SIShip(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
-
 }

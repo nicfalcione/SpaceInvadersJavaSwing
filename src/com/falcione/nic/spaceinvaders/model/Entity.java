@@ -1,15 +1,16 @@
+package com.falcione.nic.spaceinvaders.model;
 import java.awt.Graphics2D;
 
 /**
- * Abstract class to represent "things'
+ * Abstract class to represent Game Entities
  * 
  * @author Nic Falcione
- * @version 11/23/17
+ * @version 2021
  */
-public abstract class SIthing {
+public abstract class Entity {
 
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
 
     private int width;
     private int height;
@@ -26,7 +27,7 @@ public abstract class SIthing {
      * @param height
      *            height of object
      */
-    protected SIthing(int x, int y, int width, int height) {
+    protected Entity(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;

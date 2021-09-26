@@ -1,19 +1,24 @@
-import java.applet.Applet;
+package com.falcione.nic.spaceinvaders.model;
+
 import java.applet.AudioClip;
 import java.awt.Graphics2D;
-import java.net.URL;
+
+import com.falcione.nic.spaceinvaders.util.Constants;
+import com.falcione.nic.spaceinvaders.util.Utilities;
 
 /**
  * Class to inherit all types of invaders
  * 
  * @author Nic Falcione
- * @version 11/27/27
+ * @version 2021
  */
-public abstract class SIinvader extends SIship {
+
+@SuppressWarnings("deprecation")
+public abstract class SIInvader extends SIShip {
 
     private int points;
     private String direc;
-    private SIbomb missile;
+    private SIBomb bomb;
     private AudioClip shoot;
 
     /**
@@ -28,9 +33,9 @@ public abstract class SIinvader extends SIship {
      * @param height
      *            height of invader
      */
-    protected SIinvader(int x, int y, int width, int height) {
+    protected SIInvader(int x, int y, int width, int height) {
         super(x, y, width, height);
-        shoot = getSound("SIbaseShoot.wav");
+        shoot = Utilities.getSound(Constants.S_IBASE_SHOOT_WAV, getClass());
     }
 
     /**
@@ -41,18 +46,6 @@ public abstract class SIinvader extends SIship {
      */
     protected void setPoints(int points) {
         this.points = points;
-    }
-
-    /**
-     * Gets the sound for the invader
-     * 
-     * @param filename
-     *            Name of the file associated with the invader's sound
-     * @return The Sound of the invader
-     */
-    private AudioClip getSound(String filename) {
-        URL url = getClass().getResource(filename);
-        return Applet.newAudioClip(url);
     }
 
     /**
@@ -88,10 +81,10 @@ public abstract class SIinvader extends SIship {
      * Plays the shooting sound for the Invader
      */
     public void shoot() {
-        if (missile == null) {
-            missile = new SIbomb(getX() + 12, getY() - getHeight() / 3, 2, 10);
+        if (bomb == null) {
+            bomb = new SIBomb(getX() + 12, getY() - getHeight() / 3, 2, 10);
+            shoot.play();
         }
-        shoot.play();
     }
 
     /**
@@ -99,18 +92,15 @@ public abstract class SIinvader extends SIship {
      * 
      * @return the bomb object
      */
-    public SIbomb getBomb() {
-        if (missile != null) {
-            return missile;
-        }
-        return null;
+    public SIBomb getBomb() {
+        return bomb;
     }
 
     /**
      * Deletes the bomb upon hit detection
      */
     public void deleteBomb() {
-        missile = null;
+        bomb = null;
     }
 
     /**
@@ -120,8 +110,8 @@ public abstract class SIinvader extends SIship {
      *            Graphics object
      */
     public void drawBomb(Graphics2D g2) {
-        if (missile != null) {
-            missile.draw(g2);
+        if (bomb != null) {
+            bomb.draw(g2);
         }
     }
 
@@ -149,5 +139,4 @@ public abstract class SIinvader extends SIship {
      * @return true or false
      */
     public abstract boolean isDead();
-
 }

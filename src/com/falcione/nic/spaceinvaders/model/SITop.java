@@ -1,10 +1,11 @@
+package com.falcione.nic.spaceinvaders.model;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
+import com.falcione.nic.spaceinvaders.util.Constants;
+import com.falcione.nic.spaceinvaders.util.Utilities;
 
-public class SItop extends SIinvader {
+public class SITop extends SIInvader {
 
     private Image image1, image2, hit;
     private boolean dying, dead;
@@ -21,30 +22,19 @@ public class SItop extends SIinvader {
      * @param height
      *            height of the invader
      */
-    protected SItop(int x, int y, int width, int height) {
+    public SITop(int x, int y, int width, int height) {
         super(x, y, width, height);
         super.setPoints(30);
-        image1 = getImage("SItop0.gif");
-        image2 = getImage("SItop1.gif");
-        hit = getImage("SIinvaderBlast.gif");
+        
+        image1 = Utilities.getImage(Constants.S_ITOP0_GIF, getClass());
+        image2 = Utilities.getImage(Constants.S_ITOP1_GIF, getClass());
+        hit = Utilities.getImage(Constants.S_IINVADER_BLAST_GIF, getClass());
+        
         dying = dead = false;
     }
 
     /**
-     * Gets the image for the base
-     * 
-     * @param filename
-     *            Name of the file associated with the image
-     * @return Image associated with the base
-     */
-    private Image getImage(String filename) {
-        URL url = getClass().getResource(filename);
-        ImageIcon icon = new ImageIcon(url);
-        return icon.getImage();
-    }
-
-    /**
-     * Graphics drawing method overriden
+     * Graphics drawing method overridden
      * 
      * @param g2
      *            Graphics object
@@ -53,12 +43,7 @@ public class SItop extends SIinvader {
     public void draw(Graphics2D g2) {
         if (dying) {
             g2.drawImage(hit, getX(), getY(), null);
-        }
-
-        else if (dead) {
-        }
-
-        else {
+        } else if (!dead) {
             g2.drawImage(image1, getX(), getY(), null);
         }
     }
@@ -72,12 +57,7 @@ public class SItop extends SIinvader {
     public void draw2(Graphics2D g2) {
         if (dying) {
             g2.drawImage(hit, getX(), getY(), null);
-        }
-
-        else if (dead) {
-        }
-
-        else {
+        } else if (!dead) {
             g2.drawImage(image2, getX(), getY(), null);
         }
     }

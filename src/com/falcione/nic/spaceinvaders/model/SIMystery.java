@@ -1,26 +1,28 @@
-import java.applet.Applet;
+package com.falcione.nic.spaceinvaders.model;
 import java.applet.AudioClip;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import javax.swing.ImageIcon;
+import com.falcione.nic.spaceinvaders.util.Constants;
+import com.falcione.nic.spaceinvaders.util.Utilities;
 
 /**
  * Class for the mystery Invader
  * 
  * @author Nic Falcione
- * @version 11/23/17
+ * @version 2021
  */
-public class SImystery extends SIinvader {
+@SuppressWarnings("deprecation")
+public class SIMystery extends SIInvader {
 
     private ArrayList<Integer> pntVals;
     private String direc = "";
+    
     private boolean dying, dead;
-
+    
     private Image image, hit;
     private AudioClip sound;
 
@@ -36,45 +38,21 @@ public class SImystery extends SIinvader {
      * @param height
      *            height of the invader
      */
-    protected SImystery(int x, int y, int width, int height) {
+    public SIMystery(int x, int y, int width, int height) {
         super(x, y, width, height);
 
+        // Get point value
         pntVals = new ArrayList<Integer>(Arrays.asList(50, 100, 150, 300));
         Collections.shuffle(pntVals);
         super.setPoints(pntVals.get(0));
 
-        image = getImage("SImystery.gif");
-        hit = getImage("SIinvaderBlast.gif");
-        sound = getSound("SImystery.wav");
+        image = Utilities.getImage(Constants.S_IMYSTERY_GIF, getClass());
+        hit = Utilities.getImage(Constants.S_IINVADER_BLAST_GIF, getClass());
+        sound = Utilities.getSound(Constants.S_IMYSTERY_WAV, getClass());
     }
 
     /**
-     * Gets the image for the base
-     * 
-     * @param filename
-     *            Name of the file associated with the image
-     * @return Image associated with the mystery
-     */
-    private Image getImage(String filename) {
-        URL url = getClass().getResource(filename);
-        ImageIcon icon = new ImageIcon(url);
-        return icon.getImage();
-    }
-
-    /**
-     * Gets the sound for the mystery
-     * 
-     * @param filename
-     *            Name of the file associated with the mystery's sound
-     * @return The Sound of the mystery
-     */
-    private AudioClip getSound(String filename) {
-        URL url = getClass().getResource(filename);
-        return Applet.newAudioClip(url);
-    }
-
-    /**
-     * Graphics drawing method overriden
+     * Graphics drawing method overridden
      * 
      * @param g2
      *            Graphics object
@@ -83,12 +61,7 @@ public class SImystery extends SIinvader {
     public void draw(Graphics2D g2) {
         if (dying) {
             g2.drawImage(hit, getX(), getY(), null);
-        }
-
-        else if (dead) {
-        }
-
-        else {
+        } else {
             g2.drawImage(image, getX(), getY(), null);
         }
     }
@@ -149,13 +122,14 @@ public class SImystery extends SIinvader {
     }
 
     /**
-     * Graphics drawing method overriden
+     * Graphics drawing method overridden
      * 
      * @param g2
      *            Graphics object
      */
     @Override
     public void draw2(Graphics2D g2) {
+        // Unimplemented
     }
 
 }
