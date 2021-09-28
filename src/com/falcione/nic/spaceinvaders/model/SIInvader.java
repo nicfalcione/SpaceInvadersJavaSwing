@@ -44,7 +44,7 @@ public abstract class SIInvader extends SIShip {
      * @param points
      *            number of points an invader is worth
      */
-    protected void setPoints(int points) {
+    public void setPoints(int points) {
         this.points = points;
     }
 

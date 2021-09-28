@@ -27,7 +27,9 @@ public class Constants {
     public static final String DARE_TO_QUIT = "Dare to Quit?";
     
     // File Name Constants
-    public static final String S_ISHIP_HIT_WAV = "SIshipHit.wav";
+    public static final String SI_BOSS_GIF = "SIBoss.png";
+    public static final String SI_BASE_DEATH_WAV = "SIBaseDeath.wav";
+    public static final String SI_BASE_HIT = "SIBaseHit.wav";
     public static final String S_IBASESHOOT_WAV = "SIbaseshoot.wav";
     public static final String S_IBASE_GIF = "SIbase.gif";
     public static final String S_IBASE_BLAST_GIF = "SIbaseBlast.gif";
@@ -38,6 +40,7 @@ public class Constants {
     public static final String S_IBASE_SHOOT_WAV = "SIbaseShoot.wav";
     public static final String S_IMYSTERY_WAV = "SImystery.wav";
     public static final String S_IINVADER_BLAST_GIF = "SIinvaderBlast.gif";
+    public static final String SI_BOSS_BLAST = "SIBossBlast.png";
     public static final String S_IMYSTERY_GIF = "SImystery.gif";
     public static final String S_ITOP1_GIF = "SItop1.gif";
     public static final String S_ITOP0_GIF = "SItop0.gif";

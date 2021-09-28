@@ -92,7 +92,6 @@ public class SITop extends SIInvader {
     @Override
     public void move() {
         if (getBomb() != null) {
-            getBomb().move();
             if (getBomb().getY() < 0) {
                 deleteBomb();
             }

@@ -1,4 +1,5 @@
 package com.falcione.nic.spaceinvaders.model;
+
 import java.awt.Graphics2D;
 import java.awt.Image;
 
@@ -12,30 +13,32 @@ import com.falcione.nic.spaceinvaders.util.Utilities;
  * @version 2021
  *
  */
-public class SIMiddle extends SIInvader {
+public class SIBoss extends SIInvader {
 
-    private Image image1, image2, hit;
+    private Image image1, hit;
     private boolean dying, dead;
+    private int health;
+    private int maxHealth;
 
     /**
      * Constructor for the Middle Row Invader
      * 
      * @param x
-     *            x pos of the invader
+     *            x position of the invader
      * @param y
-     *            y pos of the invader
+     *            y position of the invader
      * @param width
      *            width of the invader
      * @param height
      *            height of the invader
      */
-    public SIMiddle(int x, int y, int width, int height) {
+    public SIBoss(int x, int y, int width, int height) {
         super(x, y, width, height);
-        super.setPoints(20);
+        health = Integer.MIN_VALUE;
+        maxHealth = Integer.MIN_VALUE;
         
-        image1 = Utilities.getImage(Constants.S_IMIDDLE0_GIF, getClass());
-        image2 = Utilities.getImage(Constants.S_IMIDDLE1_GIF, getClass());
-        hit = Utilities.getImage(Constants.S_IINVADER_BLAST_GIF, getClass());
+        image1 = Utilities.getImage(Constants.SI_BOSS_GIF, getClass());
+        hit = Utilities.getImage(Constants.SI_BOSS_BLAST, getClass());
         
         dying = dead = false;
     }
@@ -56,28 +59,14 @@ public class SIMiddle extends SIInvader {
     }
 
     /**
-     * Graphics drawing method overridden
-     * 
-     * @param g2
-     *            Graphics object
-     */
-    public void draw2(Graphics2D g2) {
-        if (dying) {
-            g2.drawImage(hit, getX(), getY(), null);
-        } else if (!dead) {
-            g2.drawImage(image2, getX(), getY(), null);
-        }
-    }
-
-    /**
-     * Invader is dying
+     * Bos is dying
      */
     public void dying() {
         dying = true;
     }
 
     /**
-     * Invader is dead
+     * Boss is dead
      */
     public void dead() {
         dying = false;
@@ -85,20 +74,48 @@ public class SIMiddle extends SIInvader {
     }
 
     /**
-     * Checks to see if the alien is dead
+     * Checks to see if the boss is dead
      * 
      * @return true or false
      */
     public boolean isDead() {
         return dead;
     }
+    
+    /**
+     * Sets the Boss's health
+     */
+    public void setHealth(int health) {
+        if (maxHealth == Integer.MIN_VALUE)
+            maxHealth = health;
+        this.health = health;
+    }
+    
+    /**
+     * Returns the number of hit points the boss currently has left
+     * 
+     * @return the integer health value
+     */
+    public int getHealth() {
+        return health;
+    }
+    
+    /**
+     * Returns the max number of hit points the boss starts with
+     * 
+     * @return the integer max health value
+     */
+    public int getMaxHealth() {
+        return maxHealth;
+    }
 
     /**
-     * Moves the Space Invader
+     * Moves the Boss
      */
     @Override
     public void move() {
         if (getBomb() != null) {
+            getBomb().move();
             if (getBomb().getY() < 0) {
                 deleteBomb();
             }
@@ -111,4 +128,8 @@ public class SIMiddle extends SIInvader {
         }
     }
 
+    @Override
+    public void draw2(Graphics2D g2) {
+    }
 }
+

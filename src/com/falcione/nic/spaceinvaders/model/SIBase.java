@@ -2,6 +2,9 @@ package com.falcione.nic.spaceinvaders.model;
 import java.applet.AudioClip;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.falcione.nic.spaceinvaders.data.Direction;
 import com.falcione.nic.spaceinvaders.util.Constants;
@@ -19,10 +22,12 @@ public class SIBase extends Entity {
     private Image base;
     private Image hit;
     private AudioClip shoot;
+    private AudioClip hitSound; 
     private AudioClip die;
     private boolean left, right;
-    private SIMissile missile;
+    private List<SIMissile> missiles;
     private boolean dead;
+    private int health;
 
     /**
      * SIthing constructor for game entities
@@ -39,11 +44,14 @@ public class SIBase extends Entity {
     public SIBase() {
         super(225, 375, 5, 5);
         dead = false;
+        missiles = new ArrayList<>();
+        health = 3;
         
         hit = Utilities.getImage(Constants.S_IBASE_BLAST_GIF, getClass());
+        hitSound = Utilities.getSound(Constants.SI_BASE_HIT, getClass());
         base = Utilities.getImage(Constants.S_IBASE_GIF, getClass());
         shoot = Utilities.getSound(Constants.S_IBASESHOOT_WAV, getClass());
-        die = Utilities.getSound(Constants.S_ISHIP_HIT_WAV, getClass());
+        die = Utilities.getSound(Constants.SI_BASE_DEATH_WAV, getClass());
     }
 
     /**
@@ -64,8 +72,10 @@ public class SIBase extends Entity {
             break;
         }
         
-        if (missile != null) {
-            missile.move();
+        for (SIMissile missile : missiles) {
+            if (missile != null) {
+                missile.move();
+            }
         }
     }
 
@@ -84,28 +94,31 @@ public class SIBase extends Entity {
         if (right)
             x += 5;
         
-        if (missile != null) {
-            missile.move();
-            if (missile.getY() < 0) {
-                missile = null;
+        for (Iterator<SIMissile> iter = missiles.iterator(); iter.hasNext();) {
+            SIMissile missile = iter.next();
+            if (missile != null) {
+                missile.move();
+                if (missile.getY() < 0) {
+                    iter.remove();
+                }
             }
         }
     }
 
     /**
-     * Returns the missile object
+     * Returns the missile list
      * 
-     * @return the missile object
+     * @return the missile list
      */
-    public SIMissile getMissile() {
-        return missile;
+    public List<SIMissile> getMissiles() {
+        return missiles;
     }
 
     /**
      * Deletes the missile upon hit detection
      */
-    public void deleteMissile() {
-        missile = null;
+    public void deleteMissile(SIMissile missile) {
+        missiles.remove(missile);
     }
 
     /**
@@ -115,8 +128,10 @@ public class SIBase extends Entity {
      *            Graphics object
      */
     public void draw(Graphics2D g2) {
-        if (missile != null) {
-            missile.draw(g2);
+        for (SIMissile missile : missiles) {
+            if (missile != null) {
+                missile.draw(g2);
+            }
         }
 
         if (dead) {
@@ -142,12 +157,21 @@ public class SIBase extends Entity {
         die.play();
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.hitSound.play();
+        this.health = health;
+    }
+
     /**
-     * Plays the shooting sound for the base
+     * Plays the shooting sound for the base and fires a new missile
      */
-    public void shoot() {
-        if (missile == null) {
-            missile = new SIMissile(x + 12, y + base.getHeight(null) / 3, 2, 10);
+    public void shoot(int max) {
+        if (missiles.size() < max) {
+            missiles.add(new SIMissile(x + 12, y + base.getHeight(null) / 3, 2, 10));
             shoot.play();
         }
     }

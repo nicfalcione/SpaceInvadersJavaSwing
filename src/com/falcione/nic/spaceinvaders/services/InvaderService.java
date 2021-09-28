@@ -1,7 +1,11 @@
 package com.falcione.nic.spaceinvaders.services;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import com.falcione.nic.spaceinvaders.model.SIBoss;
 import com.falcione.nic.spaceinvaders.model.SIBottom;
 import com.falcione.nic.spaceinvaders.model.SIInvader;
 import com.falcione.nic.spaceinvaders.model.SIMiddle;
@@ -16,6 +20,8 @@ import com.falcione.nic.spaceinvaders.model.SITop;
 public class InvaderService {
 
     private static InvaderService instance = new InvaderService();
+    
+    private static Rectangle2D bossHealth = null;
 
     protected InvaderService() {
     }
@@ -79,5 +85,27 @@ public class InvaderService {
                 "right")));
 
         return invaders;
+    }
+    
+    /**
+     * Makes the boss invader
+     * 
+     * @return a new Boss
+     */
+    public SIBoss makeBoss() {
+        return new SIBoss(250, 0, 190, 150);
+    }
+    
+    /**
+     * Draws the Boss's health
+     */
+    public void drawBossHealth(Graphics2D g2, int currentHealth, int maxHealth) {
+        if (bossHealth == null) {
+            bossHealth = new Rectangle2D.Double(95, 30, 250, 5);
+        }
+        double width = 250 * ((double) currentHealth / (double) maxHealth);
+        bossHealth.setRect(110, 16, width, 5);
+        g2.setColor(Color.GREEN);
+        g2.fill(bossHealth);
     }
 }
