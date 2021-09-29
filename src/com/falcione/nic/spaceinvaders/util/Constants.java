@@ -48,4 +48,8 @@ public class Constants {
     
     // Game Constants
     public static final int BASE_Y = 350;
+    public static final int TIMER_SPEED = 10;
+    public static final int BOSS_WAVE_INTERVAL = 4;
+    public static final int MAX_MISSILES = 4;
+    public static final int BASE_INVADER_COUNT = 50;
 }

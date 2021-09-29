@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import com.falcione.nic.spaceinvaders.model.SIBoss;
 import com.falcione.nic.spaceinvaders.model.SIBottom;
 import com.falcione.nic.spaceinvaders.model.SIInvader;
 import com.falcione.nic.spaceinvaders.model.SIMiddle;
+import com.falcione.nic.spaceinvaders.model.SIMystery;
 import com.falcione.nic.spaceinvaders.model.SITop;
 
 /**
@@ -20,8 +23,13 @@ import com.falcione.nic.spaceinvaders.model.SITop;
 public class InvaderService {
 
     private static InvaderService instance = new InvaderService();
+    private static GameStateService gameStateService = GameStateService.getInstance();
     
-    private static Rectangle2D bossHealth = null;
+    private ArrayList<ArrayList<SIInvader>> invaders;
+    private SIBoss boss = null;
+    private SIMystery mystery = null;
+    
+    private static Rectangle2D bossHealthBar = null;
 
     protected InvaderService() {
     }
@@ -32,50 +40,31 @@ public class InvaderService {
 
     /**
      * Used to create the 2d list of invaders
-     * 
-     * @return 2d ArrayList of invaders
      */
-    public ArrayList<ArrayList<SIInvader>> makeInvaders() {
+    public void makeInvaders() {
 
-        ArrayList<ArrayList<SIInvader>> invaders = new ArrayList<>();
+        invaders = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
             invaders.add(new ArrayList<SIInvader>());
         }
 
+        // Start coordinates of invaders
         int y = 85;
         int x = 70;
         for (int i = 0; i < 50; i++) {
             if (i < 10) {
-                invaders.get(0).add(new SITop(x, y, 30, 15));
-                x += 35;
-                if (i == 9) {
-                    y += 25;
-                    x = 70;
-                }
-            } else if (i < 20) {
-                invaders.get(1).add(new SIMiddle(x, y, 30, 15));
-                x += 35;
-                if (i == 19) {
-                    y += 25;
-                    x = 70;
-                }
+                invaders.get(i/10).add(new SITop(x, y, 30, 15));
             } else if (i < 30) {
-                invaders.get(2).add(new SIMiddle(x, y, 30, 15));
-                x += 35;
-                if (i == 29) {
-                    y += 25;
-                    x = 70;
-                }
-            } else if (i < 40) {
-                invaders.get(3).add(new SIBottom(x, y, 30, 15));
-                x += 35;
-                if (i == 39) {
-                    y += 25;
-                    x = 70;
-                }
+                invaders.get(i/10).add(new SIMiddle(x, y, 30, 15));
             } else {
-                invaders.get(4).add(new SIBottom(x, y, 30, 15));
+                invaders.get(i/10).add(new SIBottom(x, y, 30, 15));
+            }
+            
+            if (i % 10 == 9) {
+                y += 25;
+                x = 70;
+            } else {
                 x += 35;
             }
         }
@@ -83,29 +72,70 @@ public class InvaderService {
         // Initializes the invaders to start moving right
         invaders.forEach(row -> row.forEach(invader -> invader.setDirec(
                 "right")));
-
+    }
+    
+    public ArrayList<ArrayList<SIInvader>> getInvaders() {
         return invaders;
     }
+
+    public SIMystery getMystery() {
+        return mystery;
+    }
     
+    public void removeMystery() {
+        mystery = null;
+    }
+
+    public SIBoss getBoss() {
+        return boss;
+    }
+
     /**
      * Makes the boss invader
-     * 
-     * @return a new Boss
      */
-    public SIBoss makeBoss() {
-        return new SIBoss(250, 0, 190, 150);
+    public void makeBoss() {
+        this.boss = new SIBoss(250, 0, 190, 150);
+        boss.setHealth(10 * (gameStateService.getCurrentLevel().getScoreFactor()));
+        boss.setDirec("right");
+        boss.setPoints(500);
     }
     
     /**
-     * Draws the Boss's health
+     * Makes the mystery invader
      */
-    public void drawBossHealth(Graphics2D g2, int currentHealth, int maxHealth) {
-        if (bossHealth == null) {
-            bossHealth = new Rectangle2D.Double(95, 30, 250, 5);
+    @SuppressWarnings("deprecation")
+    public void makeMystery() {
+        ArrayList<String> dir = new ArrayList<String>(
+                Arrays.asList("left", "right"));
+        Collections.shuffle(dir);
+        String direc = dir.get(0);
+        if (direc.equals("left")) {
+            mystery = new SIMystery(499, 50, 35, 8);
+            mystery.setPoints(mystery.getPoints() * gameStateService.getCurrentLevel().getScoreFactor());
+            mystery.setDirection(direc);
+            mystery.getSound().play();
+        } else if (direc.equals("right")) {
+            mystery = new SIMystery(-10, 50, 35, 8);
+            mystery.setPoints(mystery.getPoints() * gameStateService.getCurrentLevel().getScoreFactor());
+            mystery.setDirection(direc);
+            mystery.getSound().play();
         }
-        double width = 250 * ((double) currentHealth / (double) maxHealth);
-        bossHealth.setRect(110, 16, width, 5);
+    }
+    
+    public void removeBoss() {
+        boss = null;
+    }
+    
+    /**
+     * Draws the Boss's healthbar
+     */
+    public void drawBossHealthBar(Graphics2D g2) {
+        if (bossHealthBar == null) {
+            bossHealthBar = new Rectangle2D.Double(95, 30, 250, 5);
+        }
+        double width = 250 * ((double) boss.getHealth() / (double) boss.getMaxHealth());
+        bossHealthBar.setRect(110, 16, width, 5);
         g2.setColor(Color.GREEN);
-        g2.fill(bossHealth);
+        g2.fill(bossHealthBar);
     }
 }
