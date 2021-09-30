@@ -10,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import com.falcione.nic.spaceinvaders.engine.GameTimer;
 import com.falcione.nic.spaceinvaders.util.Constants;
 
 /**
@@ -21,7 +22,9 @@ import com.falcione.nic.spaceinvaders.util.Constants;
 @SuppressWarnings("serial")
 public class SI extends JFrame {
 
-    private SIpanel panel;
+    private GameTimer timer = GameTimer.getInstance();
+    
+    private static SIpanel panel;
 
     /**
      * Constructor to create a Space Invaders Frame
@@ -65,7 +68,7 @@ public class SI extends JFrame {
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.stopTimer();
+                timer.stop();
                 Object[] options = { Constants.YES, Constants.NO, Constants.CANCEL };
                 int action = JOptionPane.showOptionDialog(null,
                         Constants.START_A_NEW_GAME, Constants.SELECT_AN_OPTION,
@@ -76,11 +79,11 @@ public class SI extends JFrame {
                     panel = new SIpanel();
                     add(panel);
                     revalidate();
-                    panel.startTimer();
+                    timer.start();
                 }
 
                 else {
-                    panel.startTimer();
+                    timer.start();
                 }
             }
         });
@@ -89,7 +92,7 @@ public class SI extends JFrame {
         pause.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.stopTimer();
+                timer.stop();
                 resume.setEnabled(true);
                 pause.setEnabled(false);
             }
@@ -99,7 +102,7 @@ public class SI extends JFrame {
         resume.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.startTimer();
+                timer.start();
                 resume.setEnabled(false);
                 pause.setEnabled(true);
             }
@@ -108,7 +111,7 @@ public class SI extends JFrame {
         exit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.stopTimer();
+                timer.stop();
                 Object[] options = { Constants.YES, Constants.NO, Constants.CANCEL };
                 int action = JOptionPane.showOptionDialog(null, Constants.DARE_TO_QUIT,
                         Constants.SELECT_AN_OPTION, JOptionPane.YES_NO_CANCEL_OPTION,
@@ -119,7 +122,7 @@ public class SI extends JFrame {
                 }
 
                 else {
-                    panel.startTimer();
+                    timer.start();
                 }
             }
         });
@@ -132,7 +135,7 @@ public class SI extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-                panel.stopTimer();
+                timer.stop();
                 Object[] options = { Constants.YES, Constants.NO, Constants.CANCEL };
                 int action = JOptionPane.showOptionDialog(null, Constants.DARE_TO_QUIT,
                         Constants.SELECT_AN_OPTION, JOptionPane.YES_NO_CANCEL_OPTION,
@@ -143,7 +146,7 @@ public class SI extends JFrame {
                 }
 
                 else {
-                    panel.startTimer();
+                    timer.start();
                 }
             }
         });
@@ -153,9 +156,9 @@ public class SI extends JFrame {
     }
 
     /**
-     * Starts a new game
+     * returns the panel
      */
-    public SIpanel getPanel() {
+    public static  SIpanel getPanel() {
         return panel;
     }
 

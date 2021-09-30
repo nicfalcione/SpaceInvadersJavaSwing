@@ -1,10 +1,14 @@
 package com.falcione.nic.spaceinvaders.services;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import com.falcione.nic.spaceinvaders.data.Level;
+import com.falcione.nic.spaceinvaders.model.SIBase;
 import com.falcione.nic.spaceinvaders.util.Constants;
 
 /**
- * Contains Gamestate objects and properties to maintain
+ * Contains Game State objects and properties to track state of the game.
  * 
  * @author Nic Falcione
  * @version 2021
@@ -12,22 +16,19 @@ import com.falcione.nic.spaceinvaders.util.Constants;
 public class GameStateService {
 
     private static GameStateService instance = new GameStateService();
+    private static InvaderService invaderService = InvaderService.getInstance();
     
     private Level currentLevel;
-
     private boolean won;
-
     private boolean lost;
     
-    private int alienCount;
-    
+    private int alienCount;    
     private int score;
     
     private boolean achievedNewHighScore;
-
     private int pulseSpeedInvaders;
-
     private boolean needToSpeedUpInvaders;
+    private SIBase base;
     
     protected GameStateService() {
         won = lost = achievedNewHighScore = false;
@@ -35,6 +36,8 @@ public class GameStateService {
         currentLevel = Level.ONE;
         alienCount = Constants.BASE_INVADER_COUNT;
         score = 0;
+        
+        base = new SIBase();
         
         pulseSpeedInvaders = currentLevel.getInitPulseSpeedFactor();
     }
@@ -45,10 +48,6 @@ public class GameStateService {
 
     public Level getCurrentLevel() {
         return currentLevel;
-    }
-    
-    public void increaseLevel() {
-        currentLevel = currentLevel.next();
     }
 
     public void setCurrentLevel(Level currentLevel) {
@@ -87,10 +86,6 @@ public class GameStateService {
         this.pulseSpeedInvaders = pulseSpeedInvaders;
     }
     
-    public void assignLevelInitialInvaderSpeed() {
-        pulseSpeedInvaders = currentLevel.getInitPulseSpeedFactor();
-    }
-    
     public boolean isNeedToSpeedUpInvaders() {
         return needToSpeedUpInvaders;
     }
@@ -108,6 +103,10 @@ public class GameStateService {
     public int getAlienCount() {
         return alienCount;
     }
+    
+    public SIBase getBase() {
+        return base;
+    }
 
     public void setAlienCount(int alienCount) {
         this.alienCount = alienCount;
@@ -122,9 +121,32 @@ public class GameStateService {
     }
 
     public void speedUpInvaders() {
+        // If we need to speed up invaders and the invaders have not achieved the Level's max invader movement speed
         if (needToSpeedUpInvaders && pulseSpeedInvaders >= currentLevel.getSpeedFactor()) {
             pulseSpeedInvaders *= currentLevel.getPulseSpeedFactor();
             needToSpeedUpInvaders = false;
         }
+    }
+
+    public void increaseLevel(Graphics g, Graphics2D g2) {
+        won = false;
+        needToSpeedUpInvaders = true;
+        currentLevel = currentLevel.next();
+        
+        // Trigger Boss round every defined interval of waves
+        if (getCurrentLevel().getScoreFactor() % Constants.BOSS_WAVE_INTERVAL == 0) {
+            invaderService.makeBoss();
+            invaderService.drawBossHealthBar(g2);
+            
+            alienCount = 1;
+        } else {
+            alienCount = Constants.BASE_INVADER_COUNT;
+            
+            pulseSpeedInvaders = currentLevel.getInitPulseSpeedFactor();
+            
+            invaderService.makeInvaders();
+        }
+        
+//        timer.start();
     }
 }

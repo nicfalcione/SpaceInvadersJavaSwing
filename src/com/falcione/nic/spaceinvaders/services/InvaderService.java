@@ -6,7 +6,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
+import com.falcione.nic.spaceinvaders.model.SIBomb;
 import com.falcione.nic.spaceinvaders.model.SIBoss;
 import com.falcione.nic.spaceinvaders.model.SIBottom;
 import com.falcione.nic.spaceinvaders.model.SIInvader;
@@ -28,10 +30,12 @@ public class InvaderService {
     private ArrayList<ArrayList<SIInvader>> invaders;
     private SIBoss boss = null;
     private SIMystery mystery = null;
+    public List<SIBomb> bombs;
     
     private static Rectangle2D bossHealthBar = null;
 
     protected InvaderService() {
+        bombs = new ArrayList<>();
     }
 
     public static InvaderService getInstance() {
@@ -42,7 +46,7 @@ public class InvaderService {
      * Used to create the 2d list of invaders
      */
     public void makeInvaders() {
-
+        
         invaders = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
@@ -88,6 +92,10 @@ public class InvaderService {
 
     public SIBoss getBoss() {
         return boss;
+    }
+
+    public List<SIBomb> getBombs() {
+        return bombs;
     }
 
     /**
@@ -137,5 +145,22 @@ public class InvaderService {
         bossHealthBar.setRect(110, 16, width, 5);
         g2.setColor(Color.GREEN);
         g2.fill(bossHealthBar);
+    }
+
+    public void generateBombs() {
+        if (getBombs().size() < gameStateService.getCurrentLevel().getMaxBombs()) {
+            for (int i = 0; i < getInvaders().size(); i++) {
+                for (int j = 0; j < getInvaders().get(0).size(); j++) {
+                    int rand = (int) (Math.random() * 10000);
+                    
+                    if (rand > 10000 - gameStateService.getCurrentLevel().getBombRandomFactor()
+                            && !getInvaders().get(i).get(j).isDead()
+                            && getBombs().size() < gameStateService.getCurrentLevel().getMaxBombs()) {
+                        getInvaders().get(i).get(j).shoot();
+                        getBombs().add(getInvaders().get(i).get(j).getBomb());
+                    }
+                }
+            }
+        }
     }
 }

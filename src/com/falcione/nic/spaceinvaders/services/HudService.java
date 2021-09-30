@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import javax.swing.Timer;
 
-import com.falcione.nic.spaceinvaders.model.SIBase;
-import com.falcione.nic.spaceinvaders.model.SIBoss;
+import javax.swing.Timer;
 
 /**
  * Singleton Class to handle drawing the HUD
@@ -19,6 +17,7 @@ public class HudService {
     
     private static HudService instance = new HudService();
     private static GameStateService gameStateService = GameStateService.getInstance();
+    private static InvaderService invaderService = InvaderService.getInstance();
     
     protected HudService() {}
 
@@ -46,10 +45,10 @@ public class HudService {
      * 
      * @param g Graphics object
      */
-    public void displayLevel(Graphics g, SIBoss boss) {
+    public void displayLevel(Graphics g) {
         g.setColor(Color.GREEN);
         g.setFont(new Font("Comic Sans", Font.BOLD, 16));
-        if (boss == null) {
+        if (invaderService.getBoss() == null) {
             g.drawString("Wave " + Integer.toString(gameStateService.getCurrentLevel().getScoreFactor()), 20, 20);
         } else {
             g.drawString("Boss " + Integer.toString(gameStateService.getCurrentLevel().getScoreFactor() / 4), 20, 20);
@@ -61,10 +60,10 @@ public class HudService {
      * 
      * @param g Graphics object
      */
-    public void displayLivesCount(Graphics g, SIBase base) {
+    public void displayLivesCount(Graphics g) {
         g.setColor(Color.GREEN);
         g.setFont(new Font("Comic Sans", Font.BOLD, 16));
-        g.drawString("Lives: " + Integer.toString(base.getHealth()), 400, 435);
+        g.drawString("Lives: " + Integer.toString(gameStateService.getBase().getHealth()), 400, 435);
     }
     
     /**
