@@ -98,12 +98,6 @@ public class SIMiddle extends SIInvader {
      */
     @Override
     public void move() {
-        if (getBomb() != null) {
-            if (getBomb().getY() < 0) {
-                deleteBomb();
-            }
-        }
-        
         if (getDirec().equals("left")) {
             setX(getX() - 5);
         } else if (getDirec().equals("right")) {

@@ -1,5 +1,6 @@
 package com.falcione.nic.spaceinvaders.model;
 
+import java.applet.AudioClip;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
@@ -13,12 +14,14 @@ import com.falcione.nic.spaceinvaders.util.Utilities;
  * @version 2021
  *
  */
+@SuppressWarnings("deprecation")
 public class SIBoss extends SIInvader {
 
     private Image image1, hit;
     private boolean dying, dead;
     private int health;
     private int maxHealth;
+    private AudioClip shoot;
 
     /**
      * Constructor for the Middle Row Invader
@@ -39,6 +42,7 @@ public class SIBoss extends SIInvader {
         
         image1 = Utilities.getImage(Constants.SI_BOSS_GIF, getClass());
         hit = Utilities.getImage(Constants.SI_BOSS_BLAST, getClass());
+        shoot = Utilities.getSound(Constants.S_IBASESHOOT_WAV, getClass());
         
         dying = dead = false;
     }
@@ -114,13 +118,6 @@ public class SIBoss extends SIInvader {
      */
     @Override
     public void move() {
-        if (getBomb() != null) {
-            getBomb().move();
-            if (getBomb().getY() < 0) {
-                deleteBomb();
-            }
-        }
-        
         if (getDirec().equals("left")) {
             setX(getX() - 5);
         } else if (getDirec().equals("right")) {
@@ -130,6 +127,14 @@ public class SIBoss extends SIInvader {
 
     @Override
     public void draw2(Graphics2D g2) {
+    }
+    
+    /**
+     * Shoots a new bomb from the Boss
+     */
+    public SIBomb shoot(int i) {
+        return new SIBomb(x + (i * getWidth() / 3), y + getHeight(), 2, 10);
+//        shoot.play();
     }
 }
 

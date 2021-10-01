@@ -32,7 +32,7 @@ public class SIBomb extends Entity {
      */
     @Override
     public void move() {
-        setY(getY() + 3);
+        setY(getY() + 2);
     }
 
     /**

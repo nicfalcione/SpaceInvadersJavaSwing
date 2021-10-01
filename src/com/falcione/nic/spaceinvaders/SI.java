@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import com.falcione.nic.spaceinvaders.engine.GameTimer;
+import com.falcione.nic.spaceinvaders.services.GameStateService;
 import com.falcione.nic.spaceinvaders.util.Constants;
 
 /**
@@ -22,6 +23,7 @@ import com.falcione.nic.spaceinvaders.util.Constants;
 @SuppressWarnings("serial")
 public class SI extends JFrame {
 
+    private GameStateService gameStateService = GameStateService.getInstance();
     private GameTimer timer = GameTimer.getInstance();
     
     private static SIpanel panel;
@@ -75,11 +77,7 @@ public class SI extends JFrame {
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, null);
                 if (action == JOptionPane.YES_OPTION) {
-                    remove(panel);
-                    panel = new SIpanel();
-                    add(panel);
-                    revalidate();
-                    timer.start();
+                    gameStateService.startNewGame();
                 }
 
                 else {

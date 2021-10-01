@@ -147,6 +147,10 @@ public class GameTimer {
         return instance;
     }
     
+    public int getPulseCount() {
+        return pulseCount;
+    }
+    
     /**
      * Used to stop timer in other classes
      */

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.falcione.nic.spaceinvaders.engine.GameTimer;
 import com.falcione.nic.spaceinvaders.model.SIBomb;
 import com.falcione.nic.spaceinvaders.model.SIBoss;
 import com.falcione.nic.spaceinvaders.model.SIBottom;
@@ -26,11 +27,12 @@ public class InvaderService {
 
     private static InvaderService instance = new InvaderService();
     private static GameStateService gameStateService = GameStateService.getInstance();
+    private static GameTimer timer = GameTimer.getInstance();
     
     private ArrayList<ArrayList<SIInvader>> invaders;
     private SIBoss boss = null;
     private SIMystery mystery = null;
-    public List<SIBomb> bombs;
+    private List<SIBomb> bombs;
     
     private static Rectangle2D bossHealthBar = null;
 
@@ -135,7 +137,7 @@ public class InvaderService {
     }
     
     /**
-     * Draws the Boss's healthbar
+     * Draws the Boss's health bar
      */
     public void drawBossHealthBar(Graphics2D g2) {
         if (bossHealthBar == null) {
@@ -147,19 +149,26 @@ public class InvaderService {
         g2.fill(bossHealthBar);
     }
 
+    
     public void generateBombs() {
-        if (getBombs().size() < gameStateService.getCurrentLevel().getMaxBombs()) {
-            for (int i = 0; i < getInvaders().size(); i++) {
-                for (int j = 0; j < getInvaders().get(0).size(); j++) {
+        if (bombs.size() < gameStateService.getCurrentLevel().getMaxBombs()) {
+            for (int i = 0; i < invaders.size(); i++) {
+                for (int j = 0; j < invaders.get(0).size(); j++) {
                     int rand = (int) (Math.random() * 10000);
                     
                     if (rand > 10000 - gameStateService.getCurrentLevel().getBombRandomFactor()
-                            && !getInvaders().get(i).get(j).isDead()
-                            && getBombs().size() < gameStateService.getCurrentLevel().getMaxBombs()) {
-                        getInvaders().get(i).get(j).shoot();
-                        getBombs().add(getInvaders().get(i).get(j).getBomb());
+                            && !invaders.get(i).get(j).isDead()
+                            && bombs.size() < gameStateService.getCurrentLevel().getMaxBombs()) {
+                        bombs.add(invaders.get(i).get(j).shoot());
                     }
                 }
+            }
+        }
+        
+        // if a boss round, shoot bombs at the rate for that boss wave
+        if (boss != null & timer.getPulseCount() % 35 == 0) {
+            for (int i = 1; i <= 3; i++) {
+                bombs.add(boss.shoot(i));
             }
         }
     }

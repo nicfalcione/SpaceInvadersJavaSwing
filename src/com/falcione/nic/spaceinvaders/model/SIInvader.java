@@ -18,7 +18,6 @@ public abstract class SIInvader extends SIShip {
 
     private int points;
     private String direc;
-    private SIBomb bomb;
     private AudioClip shoot;
 
     /**
@@ -78,41 +77,11 @@ public abstract class SIInvader extends SIShip {
     }
 
     /**
-     * Plays the shooting sound for the Invader
+     * Shoots a new bomb
      */
-    public void shoot() {
-        if (bomb == null) {
-            bomb = new SIBomb(getX() + 12, getY() - getHeight() / 3, 2, 10);
-            shoot.play();
-        }
-    }
-
-    /**
-     * Returns the bomb of the invader
-     * 
-     * @return the bomb object
-     */
-    public SIBomb getBomb() {
-        return bomb;
-    }
-
-    /**
-     * Deletes the bomb upon hit detection
-     */
-    public void deleteBomb() {
-        bomb = null;
-    }
-
-    /**
-     * Draws Bombs
-     * 
-     * @param g2
-     *            Graphics object
-     */
-    public void drawBomb(Graphics2D g2) {
-        if (bomb != null) {
-            bomb.draw(g2);
-        }
+    public SIBomb shoot() {
+        shoot.play();
+        return new SIBomb(getX() + 12, getY() - getHeight() / 3, 2, 10);
     }
 
     /**

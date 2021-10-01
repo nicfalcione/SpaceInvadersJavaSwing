@@ -10,6 +10,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 
 import com.falcione.nic.spaceinvaders.data.Direction;
 import com.falcione.nic.spaceinvaders.engine.GameTimer;
+import com.falcione.nic.spaceinvaders.model.SIBomb;
 import com.falcione.nic.spaceinvaders.services.CollisionService;
 import com.falcione.nic.spaceinvaders.services.GameStateService;
 import com.falcione.nic.spaceinvaders.services.HudService;
@@ -110,29 +112,25 @@ public class SIpanel extends JPanel {
         // Creates bombs
         invaderService.generateBombs();
 
-        // Draws Bombs
-        for (int i = 0; i < invaderService.getInvaders().size(); i++) {
-            for (int j = 0; j < invaderService.getInvaders().get(0).size(); j++) {
-                if (invaderService.getInvaders().get(i).get(j).getBomb() != null) {
-                    invaderService.getInvaders().get(i).get(j).drawBomb(g2);
-                    
-                    if (invaderService.getInvaders().get(i).get(j).getBomb() != null
-                            && invaderService.getInvaders().get(i).get(j).getBomb().getY() > 500) {
-                        for (int k = 0; k < invaderService.getBombs().size(); k++) {
-                            if (invaderService.getBombs().get(k)
-                                    .equals(invaderService.getInvaders().get(i).get(j).getBomb())) {
-                                invaderService.getInvaders().get(i).get(j).deleteBomb();
-                                invaderService.getBombs().remove(k);
-                            }
-                        }
-                    }
-                }
+        // Draws bombs
+        for (Iterator<SIBomb> iter = invaderService.getBombs().iterator(); iter.hasNext();) {
+            SIBomb bomb = iter.next();
+            bomb.draw(g2);
+            bomb.move();
+            if (bomb.getY() > 500) {
+                bomb = null;
+                iter.remove();
             }
         }
         
         // Draws Boss
         if (invaderService.getBoss() != null) {
             invaderService.getBoss().draw(g2);
+        }
+        
+        // Draws mystery if declared
+        if (invaderService.getMystery() != null) {
+            invaderService.getMystery().draw(g2);
         }
 
         collisionService.handleInvaderCollision(g2);
@@ -165,11 +163,6 @@ public class SIpanel extends JPanel {
         
         // Displays the amount of lives left
         hudService.displayLivesCount(g);
-
-        // Draws mystery if declared
-        if (invaderService.getMystery() != null) {
-            invaderService.getMystery().draw(g2);
-        }
 
         // Displays winning message
         if (gameStateService.hasWon()) {

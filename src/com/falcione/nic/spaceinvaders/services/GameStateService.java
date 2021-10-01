@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import com.falcione.nic.spaceinvaders.data.Level;
+import com.falcione.nic.spaceinvaders.engine.GameTimer;
 import com.falcione.nic.spaceinvaders.model.SIBase;
 import com.falcione.nic.spaceinvaders.util.Constants;
 
@@ -17,6 +18,7 @@ public class GameStateService {
 
     private static GameStateService instance = new GameStateService();
     private static InvaderService invaderService = InvaderService.getInstance();
+    private static GameTimer timer = GameTimer.getInstance();
     
     private Level currentLevel;
     private boolean won;
@@ -148,5 +150,20 @@ public class GameStateService {
         }
         
 //        timer.start();
+    }
+    
+    public void startNewGame() {
+        won = lost = achievedNewHighScore = false;
+        needToSpeedUpInvaders = false;
+        currentLevel = Level.ONE;
+        alienCount = Constants.BASE_INVADER_COUNT;
+        score = 0;
+        
+        base = new SIBase();
+        
+        pulseSpeedInvaders = currentLevel.getInitPulseSpeedFactor();
+        
+        invaderService.makeInvaders();
+        timer.start();
     }
 }
