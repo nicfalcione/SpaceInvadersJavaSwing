@@ -33,7 +33,7 @@ public class SI extends JFrame {
      */
     public SI() {
         setTitle(Constants.SPACE_INVADERS);
-        setSize(500, 500);
+        setSize(500, 700);
 
         JMenuBar menubar = new JMenuBar();
         JMenu game = new JMenu(Constants.GAME);

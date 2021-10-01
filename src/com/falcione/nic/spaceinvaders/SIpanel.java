@@ -65,7 +65,7 @@ public class SIpanel extends JPanel {
                         gameStateService.getBase().setDirection(true, Direction.RIGHT);
                         break;
                     case KeyEvent.VK_SPACE:
-                        gameStateService.getBase().shoot(Constants.MAX_MISSILES);
+//                       gameStateService.getBase().shoot(Constants.MAX_MISSILES);
                     case KeyEvent.VK_P:
                         timer.stop();
                     case KeyEvent.VK_R:
@@ -108,6 +108,7 @@ public class SIpanel extends JPanel {
 
         // draws the base
         gameStateService.getBase().draw(g2);
+        gameStateService.fireBaseMissiles();
 
         // Creates bombs
         invaderService.generateBombs();
@@ -117,7 +118,7 @@ public class SIpanel extends JPanel {
             SIBomb bomb = iter.next();
             bomb.draw(g2);
             bomb.move();
-            if (bomb.getY() > 500) {
+            if (bomb.getY() > Constants.MAX_Y) {
                 bomb = null;
                 iter.remove();
             }

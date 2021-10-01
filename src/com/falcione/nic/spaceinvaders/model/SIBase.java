@@ -42,7 +42,7 @@ public class SIBase extends Entity {
      *            height of object
      */
     public SIBase() {
-        super(225, 375, 5, 5);
+        super(225, Constants.BASE_Y, 5, 5);
         dead = false;
         missiles = new ArrayList<>();
         health = 3;
@@ -169,10 +169,8 @@ public class SIBase extends Entity {
     /**
      * Plays the shooting sound for the base and fires a new missile
      */
-    public void shoot(int max) {
-        if (missiles.size() < max) {
-            missiles.add(new SIMissile(x + 12, y + base.getHeight(null) / 3, 2, 10));
-            shoot.play();
-        }
+    public void shoot() {
+        missiles.add(new SIMissile(x + 12, y + base.getHeight(null) / 3, 2, 10));
+        shoot.play();
     }
 }

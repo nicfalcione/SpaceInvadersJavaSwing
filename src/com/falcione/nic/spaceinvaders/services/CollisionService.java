@@ -105,28 +105,6 @@ public class CollisionService {
             if (bombY < baseY && bombY > baseY - 10 && bombX > baseX
                     && bombX < baseX + 25 && !gameStateService.hasLost()) {
                 
-//                for (int i = 0; i < invaderService.getInvaders().size(); i++) {
-//                    for (int j = 0; j < invaderService.getInvaders().get(0).size(); j++) {
-//                        if (invaderService.getInvaders().get(i).get(j).getBomb() != null) {
-//                            if (bomb.equals(invaderService.getInvaders().get(i).get(j).getBomb())) {
-//                                invaderService.getInvaders().get(i).get(j).deleteBomb();
-//                                gameStateService.getBase().setHealth(gameStateService.getBase().getHealth() - 1);
-//                            }
-//                        }
-//                    }
-//                }
-//                
-//                // Remove Bomb
-//                if (invaderService.getBoss() != null) {
-//                    for (Iterator<SIBomb> iter2 = invaderService.getBoss().getBombs().iterator(); iter.hasNext();) {
-//                        SIBomb b = iter2.next();
-//                        if (b.equals(bomb)) {
-//                            invaderService.getBoss().deleteBomb(b);
-//                            gameStateService.getBase().setHealth(gameStateService.getBase().getHealth() - 1);
-//                        }
-//                    }
-//                }
-                
                 iter.remove();
                 gameStateService.getBase().setHealth(gameStateService.getBase().getHealth() - 1);
                 

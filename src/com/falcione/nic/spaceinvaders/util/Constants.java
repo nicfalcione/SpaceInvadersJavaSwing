@@ -47,9 +47,14 @@ public class Constants {
     public static final String SAVE_FILE = "save.txt";
     
     // Game Constants
-    public static final int BASE_Y = 350;
+    public static final int BASE_Y = 525;
     public static final int TIMER_SPEED = 10;
     public static final int BOSS_WAVE_INTERVAL = 4;
     public static final int MAX_MISSILES = 4;
     public static final int BASE_INVADER_COUNT = 50;
+    public static final int MAX_Y = 700;
+    public static final int MAX_X = 500;
+    public static final int MIN_DIMENSION = 0;
+    public static final int BOSS_FIRE_DELAY = 35;
+    public static final int BASE_FIRE_DELAY = 5;
 }

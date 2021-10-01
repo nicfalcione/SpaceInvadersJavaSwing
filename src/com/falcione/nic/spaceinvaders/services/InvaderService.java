@@ -16,6 +16,7 @@ import com.falcione.nic.spaceinvaders.model.SIInvader;
 import com.falcione.nic.spaceinvaders.model.SIMiddle;
 import com.falcione.nic.spaceinvaders.model.SIMystery;
 import com.falcione.nic.spaceinvaders.model.SITop;
+import com.falcione.nic.spaceinvaders.util.Constants;
 
 /**
  * Singleton Class to handle invader actions for use in game loop
@@ -107,7 +108,7 @@ public class InvaderService {
         this.boss = new SIBoss(250, 0, 190, 150);
         boss.setHealth(10 * (gameStateService.getCurrentLevel().getScoreFactor()));
         boss.setDirec("right");
-        boss.setPoints(500);
+        boss.setPoints(500 * gameStateService.getCurrentLevel().getScoreFactor());
     }
     
     /**
@@ -117,8 +118,10 @@ public class InvaderService {
     public void makeMystery() {
         ArrayList<String> dir = new ArrayList<String>(
                 Arrays.asList("left", "right"));
+        
         Collections.shuffle(dir);
         String direc = dir.get(0);
+        
         if (direc.equals("left")) {
             mystery = new SIMystery(499, 50, 35, 8);
             mystery.setPoints(mystery.getPoints() * gameStateService.getCurrentLevel().getScoreFactor());
@@ -132,6 +135,9 @@ public class InvaderService {
         }
     }
     
+    /**
+     * Removes boss on death
+     */
     public void removeBoss() {
         boss = null;
     }
@@ -149,7 +155,9 @@ public class InvaderService {
         g2.fill(bossHealthBar);
     }
 
-    
+    /**
+     * Generates bombs from the invaders and boss
+     */
     public void generateBombs() {
         if (bombs.size() < gameStateService.getCurrentLevel().getMaxBombs()) {
             for (int i = 0; i < invaders.size(); i++) {
@@ -166,7 +174,7 @@ public class InvaderService {
         }
         
         // if a boss round, shoot bombs at the rate for that boss wave
-        if (boss != null & timer.getPulseCount() % 35 == 0) {
+        if (boss != null & timer.getPulseCount() % Constants.BOSS_FIRE_DELAY == 0) {
             for (int i = 1; i <= 3; i++) {
                 bombs.add(boss.shoot(i));
             }

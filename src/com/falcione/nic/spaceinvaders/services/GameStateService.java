@@ -121,6 +121,12 @@ public class GameStateService {
     public void increaseScoreBy(int score) {
         this.score += score;
     }
+    
+    public void fireBaseMissiles() {
+        if (timer.getPulseCount() % Constants.BASE_FIRE_DELAY == 0) {
+            base.shoot();
+        }
+    }
 
     public void speedUpInvaders() {
         // If we need to speed up invaders and the invaders have not achieved the Level's max invader movement speed

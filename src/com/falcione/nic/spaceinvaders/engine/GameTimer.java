@@ -91,7 +91,8 @@ public class GameTimer {
 
                 // Deletes Mystery when out of bounds
                 if (invaderService.getMystery() != null
-                        && (invaderService.getMystery().getX() < -10 || invaderService.getMystery().getX() > 499)) {
+                        && (invaderService.getMystery().getX() + invaderService.getMystery().getWidth() < Constants.MIN_DIMENSION 
+                        || invaderService.getMystery().getX() > Constants.MAX_X)) {
                     invaderService.removeMystery();
                 }
                 

@@ -63,7 +63,7 @@ public class HudService {
     public void displayLivesCount(Graphics g) {
         g.setColor(Color.GREEN);
         g.setFont(new Font("Comic Sans", Font.BOLD, 16));
-        g.drawString("Lives: " + Integer.toString(gameStateService.getBase().getHealth()), 400, 435);
+        g.drawString("Lives: " + Integer.toString(gameStateService.getBase().getHealth()), 400, 610);
     }
     
     /**
@@ -86,7 +86,7 @@ public class HudService {
         g.drawString("Game Over", 100, 200);
         if (gameStateService.hasAchievedNewHighScore()) {
             g.setFont(new Font("Helvetica", Font.BOLD, 25));
-            g.drawString("New High Score!", 130, 250);
+            g.drawString("New High Score!", 130, 350);
             gameStateService.setAchievedNewHighScore(false);
         }
     }
