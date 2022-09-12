@@ -24,13 +24,14 @@ import com.falcione.nic.spaceinvaders.services.CollisionService;
 import com.falcione.nic.spaceinvaders.services.GameStateService;
 import com.falcione.nic.spaceinvaders.services.HudService;
 import com.falcione.nic.spaceinvaders.services.InvaderService;
+import com.falcione.nic.spaceinvaders.services.PowerUpService;
 import com.falcione.nic.spaceinvaders.util.Constants;
 
 /**
  * Space Invaders panel class
  * 
  * @author Nic Falcione
- * @version 2021
+ * @version 2022
  */
 @SuppressWarnings("serial")
 public class SIpanel extends JPanel {
@@ -39,6 +40,7 @@ public class SIpanel extends JPanel {
     private static GameStateService gameStateService = GameStateService.getInstance();
     private static HudService hudService = HudService.getInstance();
     private static CollisionService collisionService = CollisionService.getInstance();
+    private static PowerUpService powerUpService = PowerUpService.getInstance();
     private static GameTimer timer = GameTimer.getInstance();
 
     private File highscore;
@@ -52,6 +54,7 @@ public class SIpanel extends JPanel {
         setBackground(Color.BLACK);
         setFocusable(true);
 
+        // Handles User Key interactions
         addKeyListener(new KeyListener() {
 
             @Override
@@ -64,12 +67,12 @@ public class SIpanel extends JPanel {
                     case KeyEvent.VK_RIGHT:
                         gameStateService.getBase().setDirection(true, Direction.RIGHT);
                         break;
-                    case KeyEvent.VK_SPACE:
-//                       gameStateService.getBase().shoot(Constants.MAX_MISSILES);
                     case KeyEvent.VK_P:
                         timer.stop();
+                        break;
                     case KeyEvent.VK_R:
                         timer.start();
+                        break;
                     }
                 }
             }
@@ -133,15 +136,17 @@ public class SIpanel extends JPanel {
         if (invaderService.getMystery() != null) {
             invaderService.getMystery().draw(g2);
         }
-
-        collisionService.handleInvaderCollision(g2);
-
-        // Checks to see if base is hit
-        collisionService.handleBaseCollision();
-
-        collisionService.handleMysteryCollision(g2);
         
+        if (powerUpService.getPowerUp() != null) {
+            powerUpService.getPowerUp().draw(g2);
+        }
+
+        // Handle collisions within the game
+        collisionService.handleInvaderCollision(g2);
+        collisionService.handleBaseCollision();
+        collisionService.handleMysteryCollision(g2);
         collisionService.handleBossCollision(g2);
+        collisionService.handlePowerUpCollision();
 
         // Draws all remaining invaders
         for (int i = 0; i < invaderService.getInvaders().size(); i++) {
@@ -167,7 +172,6 @@ public class SIpanel extends JPanel {
 
         // Displays winning message
         if (gameStateService.hasWon()) {
-//            hudService.displayWon(g, timer);
             gameStateService.increaseLevel(g, g2);
         }
 

@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
-import javax.swing.Timer;
-
 /**
  * Singleton Class to handle drawing the HUD
  * 
@@ -64,17 +62,6 @@ public class HudService {
         g.setColor(Color.GREEN);
         g.setFont(new Font("Comic Sans", Font.BOLD, 16));
         g.drawString("Lives: " + Integer.toString(gameStateService.getBase().getHealth()), 400, 610);
-    }
-    
-    /**
-     * Displays message that says user won
-     */
-    public void displayWon(Graphics g, Timer timer) {
-        g.setColor(Color.GREEN);
-        g.setFont(new Font("Helvetica", Font.BOLD, 50));
-        g.drawString("You beat Level " + Integer.toString(gameStateService.getCurrentLevel()
-                .getScoreFactor()), 75, 200);
-        timer.stop();
     }
     
     /**

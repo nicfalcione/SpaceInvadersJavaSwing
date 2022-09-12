@@ -9,13 +9,14 @@ import com.falcione.nic.spaceinvaders.SI;
 import com.falcione.nic.spaceinvaders.model.SIBomb;
 import com.falcione.nic.spaceinvaders.services.GameStateService;
 import com.falcione.nic.spaceinvaders.services.InvaderService;
+import com.falcione.nic.spaceinvaders.services.PowerUpService;
 import com.falcione.nic.spaceinvaders.util.Constants;
 
 /**
  * Encapsulated implementation of Java Swing's {@link Timer} for the game.
  * 
  * @author Nic
- * @version 2021
+ * @version 2022
  */
 public class GameTimer {
     
@@ -23,6 +24,7 @@ public class GameTimer {
     
     private static InvaderService invaderService = InvaderService.getInstance();
     private static GameStateService gameStateService = GameStateService.getInstance();
+    private static PowerUpService powerUpService = PowerUpService.getInstance();
     
     private Timer timer;
     private int pulseCount;
@@ -35,6 +37,7 @@ public class GameTimer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pulseCount++;
+                int ran = (int) (Math.random() * 1000);
 
                 // Speeds up invaders if bounds are hit
                 gameStateService.speedUpInvaders();
@@ -84,6 +87,22 @@ public class GameTimer {
                     s.move();
                 }
 
+                // Declares PowerUp if there isn't one and in a .1% chance every
+                // 10ms
+                if (ran < 1 && powerUpService.getPowerUp() == null) {
+                    powerUpService.makePowerUp();
+                }
+
+                // Moves PowerUp
+                if (powerUpService.getPowerUp() != null && pulseCount % Constants.POWER_UP_MOVE_DELAY == 0) {
+                    powerUpService.getPowerUp().move();
+                }
+
+                // Deletes PowerUp when out of bounds
+                if (powerUpService.getPowerUp() != null && powerUpService.getPowerUp().getY() > Constants.MAX_Y) {
+                    powerUpService.removePowerUp();
+                }
+
                 // Moves Invaders
                 if (pulseCount % gameStateService.getPulseSpeedInvaders() == 0) {
                     invaderService.getInvaders().forEach(row -> row.forEach(invader -> invader.move()));
@@ -96,21 +115,19 @@ public class GameTimer {
                     invaderService.removeMystery();
                 }
                 
-                int ran = (int) (Math.random() * 1000);
-
-                // Declares mystery if there isn't one and in a .3% chance every
+                // Declares mystery if there isn't one and in a .2% chance every
                 // 10ms
-                if (ran > 996 && invaderService.getMystery() == null) {
+                if (ran > 997 && invaderService.getMystery() == null) {
                     invaderService.makeMystery();
                 }
 
                 // Moves Mystery
-                if (invaderService.getMystery() != null && pulseCount % 2 == 0) {
+                if (invaderService.getMystery() != null && pulseCount % Constants.MYSTERY_MOVE_DELAY == 0) {
                     invaderService.getMystery().move();
                 }
                 
                 // Moves Boss
-                if (invaderService.getBoss() != null && pulseCount % 6 == 0) {
+                if (invaderService.getBoss() != null && pulseCount % Constants.BOSS_MOVE_DELAY == 0) {
                     invaderService.getBoss().move();
                     if (invaderService.getBoss().getX() > 295) {
                         invaderService.getBoss().setDirec("left");
@@ -140,7 +157,6 @@ public class GameTimer {
 
                 SI.getPanel().repaint();
             }
-
         });
     }
     

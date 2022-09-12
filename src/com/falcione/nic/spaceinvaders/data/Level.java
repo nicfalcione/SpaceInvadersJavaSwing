@@ -8,20 +8,26 @@ package com.falcione.nic.spaceinvaders.data;
  */
 public enum Level {
 
-    ONE     (50, 0.7,   10, 1,  6, 5,  40), 
-    TWO     (50, 0.675, 13, 2,  6, 6,  38), 
-    THREE   (50, 0.65,  16, 3,  6, 7,  36), 
-    FOUR    (50, 0.65,  20, 4,  6, 8,  34), 
-    FIVE    (50, 0.625, 25, 5,  6, 9,  32),
-    SIX     (50, 0.625, 27, 6,  5, 10, 30),
-    SEVEN   (50, 0.6,   28, 7,  5, 11, 28),
-    EIGHT   (50, 0.6,   30, 8,  5, 12, 26),
-    NINE    (50, 0.575, 30, 9,  5, 13, 24),
-    TEN     (50, 0.575, 32, 10, 4, 14, 22),
-    ELEVEN  (50, 0.55,  34, 11, 4, 15, 21),
-    TWELVE  (50, 0.55,  35, 12, 4, 16, 20),
-    THIRTEEN(50, 0.525, 36, 13, 4, 17, 19),
-    FOURTEEN(50, 0.525, 37, 14, 3, 18, 18);
+    ONE      (50, 0.7,   10, 1,  6, 5,  40), 
+    TWO      (50, 0.675, 13, 2,  6, 6,  38), 
+    THREE    (50, 0.65,  16, 3,  6, 7,  36), 
+    FOUR     (50, 0.65,  20, 4,  6, 8,  34), 
+    FIVE     (50, 0.625, 25, 5,  6, 9,  32),
+    SIX      (50, 0.625, 27, 6,  5, 10, 30),
+    SEVEN    (50, 0.6,   28, 7,  5, 11, 28),
+    EIGHT    (50, 0.6,   30, 8,  5, 12, 26),
+    NINE     (50, 0.575, 30, 9,  5, 13, 24),
+    TEN      (50, 0.575, 32, 10, 4, 14, 22),
+    ELEVEN   (50, 0.55,  34, 11, 4, 15, 21),
+    TWELVE   (50, 0.55,  35, 12, 4, 16, 20),
+    THIRTEEN (50, 0.525, 36, 13, 4, 17, 19),
+    FOURTEEN (50, 0.525, 37, 14, 4, 18, 18),
+    FIFTEEN  (50, 0.525, 38, 15, 4, 19, 18),
+    SIXTEEN  (50, 0.5,   39, 16, 3, 20, 17),
+    SEVENTEEN(50, 0.5,   40, 17, 3, 21, 17),
+    EIGHTEEN (50, 0.5,   41, 18, 3, 22, 16),
+    NINETEEN (50, 0.475, 42, 19, 3, 23, 16),
+    TWENTY   (50, 0.475, 43, 20, 3, 24, 15);
     
     private final int invaderCount;         // Starting count of invaders for level
     private final double pulseSpeedFactor;  // Factor by which invaders move delay decreases when bounds are hit
@@ -44,8 +50,7 @@ public enum Level {
         this.initPulseSpeedFactor = initPulseSpeedFactor;
     }
     
-    public Level next()
-    {
+    public Level next(){
         return levels[(this.ordinal() + 1) % levels.length];
     }
     

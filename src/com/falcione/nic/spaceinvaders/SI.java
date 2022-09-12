@@ -67,6 +67,7 @@ public class SI extends JFrame {
 
         panel = new SIpanel();
 
+        // Sets up UI interaction for the New Game Menu
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,6 +88,7 @@ public class SI extends JFrame {
         });
         add(panel);
 
+        // Sets up UI interaction with the Pause menu button
         pause.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,6 +99,7 @@ public class SI extends JFrame {
 
         });
 
+        // Sets up UI interaction with the Resume menu button
         resume.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,6 +109,7 @@ public class SI extends JFrame {
             }
         });
 
+        // Sets up UI interaction with the Exit menu button
         exit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,6 +133,7 @@ public class SI extends JFrame {
         
         about.addActionListener(panel.aboutListener());
 
+        // Sets up a Window Adapter for when the user interacts with the x button on the window
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

@@ -4,7 +4,7 @@ package com.falcione.nic.spaceinvaders.util;
  * Constants class
  * 
  * @author Nic Falcione
- * @version 2021
+ * @version 2022
  */
 public class Constants {
 
@@ -45,6 +45,8 @@ public class Constants {
     public static final String S_ITOP1_GIF = "SItop1.gif";
     public static final String S_ITOP0_GIF = "SItop0.gif";
     public static final String SAVE_FILE = "save.txt";
+    public static final String LIFE_POWERUP_FILE = "life.png";
+    public static final String RAPID_FILE_POWERUP_FILE = "RapidFire.png";
     
     // Game Constants
     public static final int BASE_Y = 525;
@@ -56,5 +58,13 @@ public class Constants {
     public static final int MAX_X = 500;
     public static final int MIN_DIMENSION = 0;
     public static final int BOSS_FIRE_DELAY = 35;
-    public static final int BASE_FIRE_DELAY = 5;
+    public static final int BASE_FIRE_DELAY = 10;
+    public static final int BASE_RAPID_FIRE_DELAY = 5;
+    public static final int BOSS_MOVE_DELAY = 6;
+    public static final int MYSTERY_MOVE_DELAY = 2;
+    public static final int POWER_UP_MOVE_DELAY = 5;
+
+    // PowerUps
+    public static final String LIFE_POWERUP = "LIFE_POWERUP";
+    public static final String RAPID_FILE_POWERUP = "RAPID_FIRE_POWERUP";
 }

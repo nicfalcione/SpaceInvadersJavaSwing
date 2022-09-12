@@ -59,7 +59,7 @@ public class InvaderService {
         // Start coordinates of invaders
         int y = 85;
         int x = 70;
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < Constants.BASE_INVADER_COUNT; i++) {
             if (i < 10) {
                 invaders.get(i/10).add(new SITop(x, y, 30, 15));
             } else if (i < 30) {
@@ -116,8 +116,7 @@ public class InvaderService {
      */
     @SuppressWarnings("deprecation")
     public void makeMystery() {
-        ArrayList<String> dir = new ArrayList<String>(
-                Arrays.asList("left", "right"));
+        List<String> dir = new ArrayList<>(Arrays.asList("left", "right"));
         
         Collections.shuffle(dir);
         String direc = dir.get(0);
@@ -144,6 +143,8 @@ public class InvaderService {
     
     /**
      * Draws the Boss's health bar
+     * 
+     * @param g2 {@link Graphics2D} 
      */
     public void drawBossHealthBar(Graphics2D g2) {
         if (bossHealthBar == null) {

@@ -5,18 +5,21 @@ import java.util.Iterator;
 
 import com.falcione.nic.spaceinvaders.model.SIBomb;
 import com.falcione.nic.spaceinvaders.model.SIMissile;
+import com.falcione.nic.spaceinvaders.powerup.Life;
+import com.falcione.nic.spaceinvaders.powerup.PowerUp;
 
 /**
  * Singleton class to handle collision detection
  * 
  * @author Nic Falcione
- * @version 2021
+ * @version 2022
  */
 public class CollisionService {
 
     private static CollisionService instance = new CollisionService();
     private static InvaderService invaderService = InvaderService.getInstance();
     private static GameStateService gameStateService = GameStateService.getInstance();
+    private static PowerUpService powerUpService = PowerUpService.getInstance();
     
     protected CollisionService() {}
     
@@ -24,6 +27,12 @@ public class CollisionService {
         return instance;
     }
 
+    /**
+     * Handles boss collisions with Base missiles
+     * 
+     * @param g2
+     *          2D Graphics
+     */
     public void handleBossCollision(Graphics2D g2) {
         // Check to see if boss is hit
         if (invaderService.getBoss() != null) {
@@ -62,6 +71,12 @@ public class CollisionService {
         }
     }
 
+    /**
+     * Handles collisions with Mystery invader and base missiles
+     * 
+     * @param g2
+     *          2D Graphics
+     */
     public void handleMysteryCollision(Graphics2D g2) {
         // Check to see if mystery is hit
         if (invaderService.getMystery() != null) {
@@ -93,6 +108,9 @@ public class CollisionService {
         }
     }
 
+    /**
+     * Handles base collisions with invader bombs
+     */
     public void handleBaseCollision() {
         for (Iterator<SIBomb> iter = invaderService.getBombs().iterator(); iter.hasNext();) {
             SIBomb bomb = iter.next();
@@ -115,7 +133,38 @@ public class CollisionService {
             }
         }
     }
+    
+    /**
+     * Handles collisions between the base and powerups
+     */
+    public void handlePowerUpCollision() {
+        if (powerUpService.getPowerUp() != null) {
+            int baseX = gameStateService.getBase().getX();
+            int baseY = gameStateService.getBase().getY();
+            
+            PowerUp powerUp = powerUpService.getPowerUp();
+            int powerUpX = powerUp.getX();
+            int powerUpY = powerUp.getY();
+            int height = powerUp.getHeight();
+            int width = powerUp.getWidth();
+            if (baseY > powerUpY - height && baseY < powerUpY + height
+                            && baseX > powerUpX - width && baseX < powerUpX + width) {
+                if (powerUp instanceof Life) {
+                    gameStateService.getBase().increaseHealth();
+                } else {
+                    gameStateService.initiateRapidFire();
+                }
+                powerUpService.removePowerUp();
+            }
+        }
+    }
 
+    /**
+     * Handles Invader collisions with base missiles
+     * 
+     * @param g2
+     *          2D Graphics
+     */
     public void handleInvaderCollision(Graphics2D g2) {
         // Checks to see if invaders are hit, uses iterator to avoid a concurrent modification exception
         for (Iterator<SIMissile> iter = gameStateService.getBase().getMissiles().iterator(); iter.hasNext();) {

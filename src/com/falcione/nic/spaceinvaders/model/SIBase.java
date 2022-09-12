@@ -14,14 +14,13 @@ import com.falcione.nic.spaceinvaders.util.Utilities;
  * SIbase object, what the user controls.
  * 
  * @author Nic Falcione
- * @version 2021
+ * @version 2022
  */
 @SuppressWarnings("deprecation")
 public class SIBase extends Entity {
 
     private Image base;
     private Image hit;
-    private AudioClip shoot;
     private AudioClip hitSound; 
     private AudioClip die;
     private boolean left, right;
@@ -50,7 +49,6 @@ public class SIBase extends Entity {
         hit = Utilities.getImage(Constants.S_IBASE_BLAST_GIF, getClass());
         hitSound = Utilities.getSound(Constants.SI_BASE_HIT, getClass());
         base = Utilities.getImage(Constants.S_IBASE_GIF, getClass());
-        shoot = Utilities.getSound(Constants.S_IBASESHOOT_WAV, getClass());
         die = Utilities.getSound(Constants.SI_BASE_DEATH_WAV, getClass());
     }
 
@@ -70,12 +68,6 @@ public class SIBase extends Entity {
         case RIGHT:
             right = keyPressed;
             break;
-        }
-        
-        for (SIMissile missile : missiles) {
-            if (missile != null) {
-                missile.move();
-            }
         }
     }
 
@@ -165,12 +157,15 @@ public class SIBase extends Entity {
         this.hitSound.play();
         this.health = health;
     }
+    
+    public void increaseHealth() {
+        health++;
+    }
 
     /**
      * Plays the shooting sound for the base and fires a new missile
      */
     public void shoot() {
         missiles.add(new SIMissile(x + 12, y + base.getHeight(null) / 3, 2, 10));
-        shoot.play();
     }
 }

@@ -63,7 +63,7 @@ public class SIBoss extends SIInvader {
     }
 
     /**
-     * Bos is dying
+     * Boss is dying
      */
     public void dying() {
         dying = true;
